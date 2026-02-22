@@ -806,6 +806,12 @@ function moveFrog(dir) {
   const dc = {left:-1, right:1, up:0, down:0};
   const dr = {left:0, right:0, up:1, down:-1};
 
+  // When on water, sync col from real pixel position first
+  if (WATER_ROWS.includes(frog.row)) {
+    frog.col = Math.round((frog.x - TW / 2) / TW);
+    frog.col = Math.max(0, Math.min(COLS - 1, frog.col));
+  }
+
   const newCol = frog.col + dc[dir];
   const newRow = frog.row + dr[dir];
 
@@ -813,7 +819,7 @@ function moveFrog(dir) {
   if (newRow < 0 || newRow > HOME_ROW) return;
 
   frog.facing = dir;
-  frog.fromX = frog.x;
+  frog.fromX = frog.x;   // real pixel position (includes platform drift)
   frog.fromY = frog.y;
   frog.toCol = newCol;
   frog.toRow = newRow;
@@ -871,25 +877,25 @@ function update() {
     return;
   }
 
-  // Sync frog position
-  frog.x = colToX(frog.col);
+  // Sync Y always; X only snaps on land (water rows use continuous pixel tracking)
   frog.y = rowToY(frog.row);
+  if (!WATER_ROWS.includes(frog.row)) {
+    frog.x = colToX(frog.col);
+  }
 
-  // If on log/lily, ride it
+  // If on log/lily, ride it — frog.x drifts continuously with platform
   if (WATER_ROWS.includes(frog.row)) {
     const platform = getPlatformUnder();
     if (platform) {
-      frog.x += platform.speed;
-      frog.col = Math.round((frog.x - TW/2) / TW);
-      frog.col = Math.max(0, Math.min(COLS-1, frog.col));
+      frog.x += platform.speed;  // move with platform every frame
     } else {
-      // Fell in water
+      // No platform under frog — fell in water
       killFrog();
       return;
     }
 
-    // Fell off edge
-    if (frog.x < TW*0.3 || frog.x > W - TW*0.3) {
+    // Fell off edge of screen
+    if (frog.x < TW * 0.3 || frog.x > W - TW * 0.3) {
       killFrog();
       return;
     }
@@ -905,7 +911,11 @@ function update() {
 }
 
 function onLand() {
-  frog.x = colToX(frog.col);
+  // On water rows, keep pixel X from jump landing (platform will carry it).
+  // On land/road rows, snap X to column center.
+  if (!WATER_ROWS.includes(frog.row)) {
+    frog.x = colToX(frog.col);
+  }
   frog.y = rowToY(frog.row);
 
   // Home row
