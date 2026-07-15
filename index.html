@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>FROGGER · LUKSO</title>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<title>Ranita</title>
 <style>
   :root {
     --bg: #06030f;
@@ -26,7 +25,8 @@
   body {
     background: var(--bg);
     color: #fff;
-    font-family: 'Orbitron', monospace;
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -78,11 +78,11 @@
   }
 
   .logo {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 0.85rem;
+    font-family: 'Courier New', monospace;
+    font-size: 1.1rem;
     color: var(--cyan);
     text-shadow: 0 0 10px var(--cyan), 0 0 30px rgba(0,245,255,0.4);
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
     line-height: 1.4;
   }
 
@@ -99,8 +99,8 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 0.5rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.62rem;
     letter-spacing: 0.05em;
   }
 
@@ -114,7 +114,7 @@
   }
 
   .lives-display { display: flex; gap: 3px; }
-  .life-icon { font-size: 0.7rem; filter: drop-shadow(0 0 4px var(--green)); }
+  .life-icon { font-size: 0.9rem; filter: drop-shadow(0 0 4px var(--green)); }
 
   /* ── CANVAS WRAPPER ── */
   #canvas-wrap {
@@ -148,12 +148,12 @@
   #overlay.hidden { display: none; }
 
   .ov-title {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 1.1rem;
+    font-family: 'Courier New', monospace;
+    font-size: 1.7rem;
     letter-spacing: 0.08em;
     text-align: center;
     margin-bottom: 12px;
-    line-height: 1.6;
+    line-height: 1.5;
   }
 
   .ov-title.cyan  { color: var(--cyan);  text-shadow: 0 0 20px var(--cyan); }
@@ -161,8 +161,8 @@
   .ov-title.green { color: var(--green); text-shadow: 0 0 20px var(--green); }
 
   .ov-sub {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 0.48rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.62rem;
     color: rgba(255,255,255,0.5);
     letter-spacing: 0.1em;
     text-align: center;
@@ -171,8 +171,8 @@
   }
 
   .ov-score {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 0.7rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
     color: var(--yellow);
     text-shadow: 0 0 12px var(--yellow);
     margin: 10px 0 18px;
@@ -180,8 +180,9 @@
   }
 
   .ov-btn {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 0.55rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
     letter-spacing: 0.1em;
     background: transparent;
     border: 2px solid var(--cyan);
@@ -255,7 +256,7 @@
 <body>
 
 <header>
-  <div class="logo">FROG<span>·</span>GER<br><span style="font-size:0.45rem;color:rgba(0,245,255,0.5)">LUKSO ARCADE</span></div>
+  <div class="logo">RAN<span>·</span>ITA</div>
   <div class="hud">
     <div class="hud-row">
       <span class="hud-label">SCORE</span>
@@ -278,8 +279,8 @@
 <div id="canvas-wrap">
   <canvas id="game" width="390" height="468"></canvas>
   <div id="overlay">
-    <div class="ov-title cyan" id="ov-title">FROG<br>GER</div>
-    <div class="ov-sub" id="ov-sub">LUKSO ARCADE · 2026<br>LLEGA A CASA SANO Y SALVO</div>
+    <div class="ov-title cyan" id="ov-title">RAN<br>ITA</div>
+    <div class="ov-sub" id="ov-sub">SALTA Y LLEGA A CASA<br>SANO Y SALVO</div>
     <div class="ov-score" id="ov-score" style="display:none"></div>
     <button class="ov-btn" id="ov-btn" onclick="startGame()">► INICIAR</button>
   </div>
@@ -304,23 +305,21 @@ const COLS = 13, ROWS = 14;
 const TW = W / COLS;   // ~30px tile width
 const TH = H / ROWS;   // ~33.4px tile height
 
-// Row types (bottom=0 is safe zone, top=13 is homes row)
-// Layout (row 0 = bottom):
-// 0        → safe (grass start)
-// 1-4      → road (cars)
-// 5        → safe (median)
-// 6-10     → water (logs/lilypads)
-// 11       → safe (bank)
-// 12       → homes row
-// (we'll use 13 rows 0-12, canvas fits)
+// Filas (fila 0 = abajo)
+// 0        → segura (césped inicial)
+// 1-4      → carretera (autos)
+// 5        → segura (mediana)
+// 6-10     → río (troncos/nenúfares)
+// 11       → segura (orilla)
+// 12       → fila de casas
 
 const ROAD_ROWS  = [1,2,3,4];
 const WATER_ROWS = [6,7,8,9,10];
 const SAFE_ROWS  = [0,5,11];
 const HOME_ROW   = 12;
 
-// Home slots (5 homes, evenly spaced in columns)
-const HOME_COLS = [1, 3, 5, 7, 11]; // col indices
+// Casillas de casas (5 casas, distribuidas en columnas)
+const HOME_COLS = [1, 3, 5, 7, 11];
 const NUM_HOMES = 5;
 
 // ============================================================
@@ -358,756 +357,4 @@ let homesReached = [];
 let deathTimer = 0;
 let winTimer = 0;
 let frog = {};
-let obstacles = [];
-let frameCount = 0;
-let animId;
-let inputQueue = [];
-
-// ============================================================
-// FROG
-// ============================================================
-function resetFrog() {
-  frog = {
-    col: 6,        // center column
-    row: 0,        // bottom safe row
-    x: 0, y: 0,   // pixel pos (computed in draw)
-    onLog: null,   // reference to log if riding
-    alive: true,
-    animFrame: 0,
-    facing: 'up',
-    jumpAnim: 0,   // 0-1 jump progress
-    jumping: false,
-    fromX: 0, fromY: 0,
-    toCol: 6, toRow: 0,
-  };
-}
-
-// ============================================================
-// OBSTACLES
-// ============================================================
-function buildObstacles() {
-  obstacles = [];
-  const spd = 0.45 + (level - 1) * 0.18;
-
-  // ROAD rows (1-4) — cars going different directions
-  const carDefs = [
-    {row:1, dir:1,  speed:spd*1.2, gap:4.5, color:C.car1, len:2},
-    {row:2, dir:-1, speed:spd*0.9, gap:5,   color:C.car2, len:1.5},
-    {row:3, dir:1,  speed:spd*1.5, gap:6,   color:C.car3, len:2.5},
-    {row:4, dir:-1, speed:spd*1.1, gap:3.8, color:C.car4, len:1.8},
-  ];
-
-  carDefs.forEach(({row, dir, speed, gap, color, len}) => {
-    const count = Math.floor(COLS / gap);
-    for (let i = 0; i < count; i++) {
-      obstacles.push({
-        type: 'car',
-        row,
-        x: (i * gap * TW + (dir < 0 ? W : 0)),
-        y: 0,
-        w: len * TW,
-        h: TH * 0.7,
-        speed: speed * (60/60) * (dir > 0 ? 1 : -1),
-        color,
-        dir,
-      });
-    }
-  });
-
-  // WATER rows (6-10) — logs and lilypads
-  const waterDefs = [
-    {row:10, dir:1,  speed:spd*0.7, gap:5,   type:'log', len:3},
-    {row:9,  dir:-1, speed:spd*1.0, gap:4.5, type:'log', len:2},
-    {row:8,  dir:1,  speed:spd*0.8, gap:6,   type:'log', len:3.5},
-    {row:7,  dir:-1, speed:spd*1.2, gap:4,   type:'lily', len:1},
-    {row:6,  dir:1,  speed:spd*0.9, gap:5,   type:'log', len:2.5},
-  ];
-
-  waterDefs.forEach(({row, dir, speed, gap, type, len}) => {
-    const count = Math.ceil(W / (gap * TW)) + 1;
-    for (let i = 0; i < count; i++) {
-      const startX = dir > 0
-        ? -len * TW + i * gap * TW
-        :  W + i * gap * TW;
-      obstacles.push({
-        type,
-        row,
-        x: startX,
-        y: 0,
-        w: len * TW,
-        h: TH * 0.65,
-        speed: speed * (dir > 0 ? 1 : -1),
-        dir,
-        color: type === 'log' ? C.log : C.lilypad,
-      });
-    }
-  });
-}
-
-// ============================================================
-// UTILITY
-// ============================================================
-function colToX(col) { return col * TW + TW / 2; }
-function rowToY(row) { return H - (row + 1) * TH + TH / 2; }
-
-function getRowY(row) { return H - (row + 1) * TH; }
-
-// ============================================================
-// DRAWING
-// ============================================================
-function drawBackground() {
-  // Fill all
-  ctx.fillStyle = C.bg;
-  ctx.fillRect(0, 0, W, H);
-
-  for (let row = 0; row <= HOME_ROW; row++) {
-    const y = getRowY(row);
-
-    if (row === HOME_ROW) {
-      // Homes row
-      ctx.fillStyle = C.home;
-      ctx.fillRect(0, y, W, TH);
-    } else if (SAFE_ROWS.includes(row)) {
-      // Safe grass
-      ctx.fillStyle = C.safe;
-      ctx.fillRect(0, y, W, TH);
-      // Subtle grass texture
-      ctx.fillStyle = 'rgba(0,255,136,0.03)';
-      for (let i = 0; i < COLS; i++) {
-        if ((i + row) % 2 === 0) ctx.fillRect(i * TW, y, TW, TH);
-      }
-    } else if (ROAD_ROWS.includes(row)) {
-      // Road
-      ctx.fillStyle = C.road;
-      ctx.fillRect(0, y, W, TH);
-      // Lane markings
-      ctx.fillStyle = C.roadLine;
-      ctx.fillRect(0, y + TH - 2, W, 2);
-      // Dashes
-      ctx.fillStyle = 'rgba(255,230,0,0.15)';
-      for (let i = 0; i < COLS * 2; i++) {
-        ctx.fillRect(i * TW * 0.7 + ((frameCount * 0.5) % (TW * 1.4)), y + TH / 2 - 1, TW * 0.4, 2);
-      }
-    } else if (WATER_ROWS.includes(row)) {
-      // Water
-      ctx.fillStyle = C.water;
-      ctx.fillRect(0, y, W, TH);
-      // Water shimmer
-      const shimmer = Math.sin(frameCount * 0.05 + row) * 0.03;
-      ctx.fillStyle = `rgba(0,100,255,${0.04 + shimmer})`;
-      ctx.fillRect(0, y, W, TH);
-      // Ripple lines
-      ctx.strokeStyle = 'rgba(0,150,255,0.08)';
-      ctx.lineWidth = 1;
-      for (let i = 0; i < 3; i++) {
-        const ry = y + TH * (0.25 + i * 0.25);
-        ctx.beginPath();
-        for (let x = 0; x < W; x += 2) {
-          const wave = Math.sin(x * 0.05 + frameCount * 0.03 + i * 2) * 2;
-          if (x === 0) ctx.moveTo(x, ry + wave);
-          else ctx.lineTo(x, ry + wave);
-        }
-        ctx.stroke();
-      }
-    }
-  }
-
-  // Draw home slots
-  HOME_COLS.forEach(col => {
-    const x = col * TW;
-    const y = getRowY(HOME_ROW);
-    const reached = homesReached.includes(col);
-
-    // Slot background
-    ctx.fillStyle = reached ? 'rgba(0,255,136,0.15)' : 'rgba(0,0,0,0.4)';
-    ctx.fillRect(x + 3, y + 3, TW - 6, TH - 6);
-
-    // Border
-    ctx.strokeStyle = reached ? C.homeFill : 'rgba(155,0,255,0.4)';
-    ctx.lineWidth = reached ? 2 : 1;
-    ctx.strokeRect(x + 3, y + 3, TW - 6, TH - 6);
-
-    if (reached) {
-      // Draw mini frog in home
-      drawMiniFrog(x + TW/2, y + TH/2);
-    } else {
-      // Empty house icon
-      ctx.fillStyle = 'rgba(155,0,255,0.2)';
-      ctx.font = `${TH*0.4}px sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('🏠', x + TW/2, y + TH/2);
-    }
-  });
-}
-
-function drawMiniFrog(cx, cy) {
-  const s = TH * 0.2;
-  ctx.fillStyle = C.homeFill;
-  ctx.beginPath();
-  ctx.ellipse(cx, cy, s, s*0.8, 0, 0, Math.PI*2);
-  ctx.fill();
-  // eyes
-  ctx.fillStyle = '#fff';
-  ctx.beginPath(); ctx.arc(cx - s*0.4, cy - s*0.2, s*0.2, 0, Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.arc(cx + s*0.4, cy - s*0.2, s*0.2, 0, Math.PI*2); ctx.fill();
-}
-
-function drawObstacles() {
-  obstacles.forEach(obs => {
-    const y = getRowY(obs.row) + (TH - obs.h) / 2;
-
-    if (obs.type === 'car') {
-      // Car body
-      const grad = ctx.createLinearGradient(obs.x, y, obs.x, y + obs.h);
-      grad.addColorStop(0, obs.color);
-      grad.addColorStop(1, shadeColor(obs.color, -40));
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.roundRect(obs.x + 2, y + 2, obs.w - 4, obs.h - 4, 4);
-      ctx.fill();
-
-      // Glow
-      ctx.shadowColor = obs.color;
-      ctx.shadowBlur = 8;
-      ctx.strokeStyle = obs.color;
-      ctx.lineWidth = 1;
-      ctx.stroke();
-      ctx.shadowBlur = 0;
-
-      // Headlights/taillights
-      const lightX = obs.dir > 0 ? obs.x + obs.w - 6 : obs.x + 3;
-      ctx.fillStyle = obs.dir > 0 ? '#ffffaa' : '#ff4444';
-      ctx.fillRect(lightX, y + 3, 3, obs.h * 0.3);
-      ctx.fillRect(lightX, y + obs.h - 3 - obs.h * 0.3, 3, obs.h * 0.3);
-
-      // Windows
-      ctx.fillStyle = 'rgba(150,220,255,0.3)';
-      ctx.fillRect(obs.x + obs.w * 0.2, y + 4, obs.w * 0.55, obs.h * 0.35);
-
-    } else if (obs.type === 'log') {
-      // Log
-      const grad = ctx.createLinearGradient(obs.x, y, obs.x, y + obs.h);
-      grad.addColorStop(0, C.logLight);
-      grad.addColorStop(0.5, C.log);
-      grad.addColorStop(1, '#4a2800');
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.roundRect(obs.x + 1, y + 2, obs.w - 2, obs.h - 4, 6);
-      ctx.fill();
-
-      // Log rings
-      ctx.strokeStyle = 'rgba(0,0,0,0.3)';
-      ctx.lineWidth = 1;
-      const rings = Math.floor(obs.w / TW);
-      for (let i = 1; i < rings; i++) {
-        ctx.beginPath();
-        ctx.moveTo(obs.x + i * (obs.w / rings), y + 2);
-        ctx.lineTo(obs.x + i * (obs.w / rings), y + obs.h - 2);
-        ctx.stroke();
-      }
-
-      // Moss/highlight
-      ctx.fillStyle = 'rgba(0,200,80,0.08)';
-      ctx.fillRect(obs.x + 2, y + 2, obs.w - 4, obs.h * 0.3);
-
-    } else if (obs.type === 'lily') {
-      // Lilypad
-      const cx = obs.x + obs.w / 2;
-      const cy = y + obs.h / 2;
-      const rx = obs.w * 0.42;
-      const ry = obs.h * 0.42;
-
-      ctx.fillStyle = C.lilypadD;
-      ctx.beginPath();
-      ctx.ellipse(cx, cy + 2, rx, ry, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = C.lilypad;
-      ctx.beginPath();
-      ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Cut
-      ctx.fillStyle = C.water;
-      ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.lineTo(cx, cy - ry);
-      ctx.arc(cx, cy, ry * 0.3, -Math.PI/2, -Math.PI*0.1);
-      ctx.closePath();
-      ctx.fill();
-
-      // Vein
-      ctx.strokeStyle = 'rgba(0,100,30,0.5)';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.lineTo(cx + rx * 0.7, cy - ry * 0.3);
-      ctx.stroke();
-    }
-  });
-}
-
-function drawFrog() {
-  if (!frog.alive) return;
-
-  // Interpolate position during jump
-  let px, py;
-  if (frog.jumping) {
-    const t = frog.jumpAnim;
-    const ease = t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
-    px = frog.fromX + (colToX(frog.toCol) - frog.fromX) * ease;
-    py = frog.fromY + (rowToY(frog.toRow)  - frog.fromY) * ease;
-    // Arc
-    py -= Math.sin(t * Math.PI) * TH * 0.5;
-  } else {
-    px = frog.x;
-    py = frog.y;
-  }
-
-  const s = TH * 0.35;
-
-  ctx.save();
-  ctx.translate(px, py);
-
-  // Rotate based on facing
-  const angles = {up:0, down:Math.PI, left:-Math.PI/2, right:Math.PI/2};
-  ctx.rotate(angles[frog.facing] || 0);
-
-  // Shadow
-  ctx.fillStyle = 'rgba(0,0,0,0.3)';
-  ctx.beginPath();
-  ctx.ellipse(0, s * 0.6, s * 0.7, s * 0.2, 0, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Body
-  ctx.fillStyle = C.frog;
-  ctx.shadowColor = C.frog;
-  ctx.shadowBlur = 12;
-  ctx.beginPath();
-  ctx.ellipse(0, 0, s * 0.65, s * 0.75, 0, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Belly
-  ctx.fillStyle = 'rgba(0,255,136,0.4)';
-  ctx.beginPath();
-  ctx.ellipse(0, s * 0.1, s * 0.35, s * 0.45, 0, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Front legs
-  ctx.fillStyle = C.frogDark;
-  ctx.shadowBlur = 0;
-  ctx.beginPath();
-  ctx.ellipse(-s * 0.7, s * 0.2, s * 0.22, s * 0.12, -0.4, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.beginPath();
-  ctx.ellipse(s * 0.7, s * 0.2, s * 0.22, s * 0.12, 0.4, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Back legs
-  ctx.beginPath();
-  ctx.ellipse(-s * 0.75, -s * 0.4, s * 0.28, s * 0.14, 0.5, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.beginPath();
-  ctx.ellipse(s * 0.75, -s * 0.4, s * 0.28, s * 0.14, -0.5, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Eyes
-  ctx.fillStyle = C.frog;
-  ctx.shadowColor = C.frog;
-  ctx.shadowBlur = 8;
-  ctx.beginPath(); ctx.arc(-s*0.35, -s*0.6, s*0.22, 0, Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.arc( s*0.35, -s*0.6, s*0.22, 0, Math.PI*2); ctx.fill();
-
-  ctx.fillStyle = '#000';
-  ctx.shadowBlur = 0;
-  ctx.beginPath(); ctx.arc(-s*0.35, -s*0.6, s*0.12, 0, Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.arc( s*0.35, -s*0.6, s*0.12, 0, Math.PI*2); ctx.fill();
-
-  // Eye shine
-  ctx.fillStyle = '#fff';
-  ctx.beginPath(); ctx.arc(-s*0.3, -s*0.65, s*0.05, 0, Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.arc( s*0.3, -s*0.65, s*0.05, 0, Math.PI*2); ctx.fill();
-
-  ctx.restore();
-}
-
-function drawDeathEffect() {
-  if (deathTimer > 0) {
-    const t = 1 - deathTimer / 40;
-    const x = frog.x, y = frog.y;
-    const r = TH * t * 1.5;
-
-    ctx.strokeStyle = `rgba(255,45,120,${1 - t})`;
-    ctx.lineWidth = 3;
-    ctx.shadowColor = C.pink;
-    ctx.shadowBlur = 20;
-    for (let i = 0; i < 6; i++) {
-      const angle = (i / 6) * Math.PI * 2;
-      ctx.beginPath();
-      ctx.moveTo(x + Math.cos(angle) * r * 0.3, y + Math.sin(angle) * r * 0.3);
-      ctx.lineTo(x + Math.cos(angle) * r, y + Math.sin(angle) * r);
-      ctx.stroke();
-    }
-    ctx.shadowBlur = 0;
-    ctx.lineWidth = 1;
-  }
-}
-
-function drawHUD() {
-  // Score glow
-  ctx.fillStyle = 'rgba(6,3,15,0.7)';
-  ctx.fillRect(0, 0, W, 0); // nothing, HUD is in HTML
-}
-
-function shadeColor(color, amount) {
-  const num = parseInt(color.replace('#',''), 16);
-  const r = Math.max(0, Math.min(255, (num >> 16) + amount));
-  const g = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + amount));
-  const b = Math.max(0, Math.min(255, (num & 0x0000FF) + amount));
-  return '#' + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1);
-}
-
-// ============================================================
-// GAME LOGIC
-// ============================================================
-function startGame() {
-  score = 0;
-  lives = 3;
-  level = 1;
-  homesReached = [];
-  state = 'playing';
-  resetFrog();
-  buildObstacles();
-  document.getElementById('overlay').classList.add('hidden');
-  updateHUD();
-
-  if (!animId) gameLoop();
-}
-
-function updateHUD() {
-  document.getElementById('score-el').textContent = score;
-  document.getElementById('hi-el').textContent    = hiScore;
-  document.getElementById('level-el').textContent = level;
-
-  const livesEl = document.getElementById('lives-el');
-  livesEl.innerHTML = '';
-  for (let i = 0; i < lives; i++) {
-    const span = document.createElement('span');
-    span.className = 'life-icon';
-    span.textContent = '🐸';
-    livesEl.appendChild(span);
-  }
-}
-
-function moveFrog(dir) {
-  if (!frog.alive || frog.jumping || state !== 'playing') return;
-
-  const dc = {left:-1, right:1, up:0, down:0};
-  const dr = {left:0, right:0, up:1, down:-1};
-
-  // When on water, sync col from real pixel position first
-  if (WATER_ROWS.includes(frog.row)) {
-    frog.col = Math.round((frog.x - TW / 2) / TW);
-    frog.col = Math.max(0, Math.min(COLS - 1, frog.col));
-  }
-
-  const newCol = frog.col + dc[dir];
-  const newRow = frog.row + dr[dir];
-
-  if (newCol < 0 || newCol >= COLS) return;
-  if (newRow < 0 || newRow > HOME_ROW) return;
-
-  frog.facing = dir;
-  frog.fromX = frog.x;   // real pixel position (includes platform drift)
-  frog.fromY = frog.y;
-  frog.toCol = newCol;
-  frog.toRow = newRow;
-  frog.jumping = true;
-  frog.jumpAnim = 0;
-
-  // Score for moving up
-  if (dir === 'up') {
-    score += 10;
-    if (score > hiScore) hiScore = score;
-    updateHUD();
-  }
-}
-
-function update() {
-  frameCount++;
-
-  if (state !== 'playing') return;
-
-  // Update obstacles
-  obstacles.forEach(obs => {
-    obs.x += obs.speed;
-    // Wrap around
-    if (obs.dir > 0 && obs.x > W + 10)           obs.x = -obs.w - 10;
-    if (obs.dir < 0 && obs.x < -obs.w - 10)       obs.x = W + 10;
-  });
-
-  // Death timer
-  if (deathTimer > 0) {
-    deathTimer--;
-    if (deathTimer === 0) {
-      lives--;
-      updateHUD();
-      if (lives <= 0) {
-        gameOver();
-      } else {
-        resetFrog();
-      }
-    }
-    return;
-  }
-
-  // Jump animation
-  if (frog.jumping) {
-    frog.jumpAnim += 0.12;
-    if (frog.jumpAnim >= 1) {
-      frog.jumpAnim = 1;
-      frog.jumping  = false;
-      frog.col = frog.toCol;
-      frog.row = frog.toRow;
-      frog.x = colToX(frog.col);
-      frog.y = rowToY(frog.row);
-      onLand();
-    }
-    return;
-  }
-
-  // Sync Y always; X only snaps on land (water rows use continuous pixel tracking)
-  frog.y = rowToY(frog.row);
-  if (!WATER_ROWS.includes(frog.row)) {
-    frog.x = colToX(frog.col);
-  }
-
-  // If on log/lily, ride it — frog.x drifts continuously with platform
-  if (WATER_ROWS.includes(frog.row)) {
-    const platform = getPlatformUnder();
-    if (platform) {
-      frog.x += platform.speed;  // move with platform every frame
-    } else {
-      // No platform under frog — fell in water
-      killFrog();
-      return;
-    }
-
-    // Fell off edge of screen
-    if (frog.x < TW * 0.3 || frog.x > W - TW * 0.3) {
-      killFrog();
-      return;
-    }
-  }
-
-  // Check car collision
-  if (ROAD_ROWS.includes(frog.row)) {
-    if (carCollision()) {
-      killFrog();
-      return;
-    }
-  }
-}
-
-function onLand() {
-  // On water rows, keep pixel X from jump landing (platform will carry it).
-  // On land/road rows, snap X to column center.
-  if (!WATER_ROWS.includes(frog.row)) {
-    frog.x = colToX(frog.col);
-  }
-  frog.y = rowToY(frog.row);
-
-  // Home row
-  if (frog.row === HOME_ROW) {
-    const homeCol = HOME_COLS.find(c => Math.abs(c - frog.col) < 0.8);
-    if (homeCol !== undefined && !homesReached.includes(homeCol)) {
-      homesReached.push(homeCol);
-      score += 200;
-      if (score > hiScore) hiScore = score;
-      updateHUD();
-
-      // Level complete — llegar 1 vez es suficiente!
-      setTimeout(nextLevel, 800);
-    } else {
-      // Hit lily/invalid home — treat as wall collision
-      // Just bounce back
-      frog.row = HOME_ROW - 1;
-      frog.y = rowToY(frog.row);
-    }
-    return;
-  }
-
-  // Safe row is fine
-  if (SAFE_ROWS.includes(frog.row)) return;
-
-  // Water — check immediately
-  if (WATER_ROWS.includes(frog.row)) {
-    const platform = getPlatformUnder();
-    if (!platform) killFrog();
-    return;
-  }
-
-  // Road — check immediately
-  if (ROAD_ROWS.includes(frog.row)) {
-    if (carCollision()) killFrog();
-  }
-}
-
-function getPlatformUnder() {
-  const fx = frog.x, fr = frog.row;
-  return obstacles.find(obs => {
-    if (obs.row !== fr) return false;
-    if (obs.type !== 'log' && obs.type !== 'lily') return false;
-    const oy = getRowY(obs.row) + (TH - obs.h) / 2;
-    return fx >= obs.x + 4 && fx <= obs.x + obs.w - 4;
-  }) || null;
-}
-
-function carCollision() {
-  const fx = frog.x, fy = frog.y, fr = frog.row;
-  const fHalfW = TW * 0.28, fHalfH = TH * 0.28;
-  return obstacles.some(obs => {
-    if (obs.type !== 'car' || obs.row !== fr) return false;
-    const oy = getRowY(obs.row) + (TH - obs.h) / 2;
-    return fx + fHalfW > obs.x + 4 &&
-           fx - fHalfW < obs.x + obs.w - 4 &&
-           fy + fHalfH > oy + 4 &&
-           fy - fHalfH < oy + obs.h - 4;
-  });
-}
-
-function killFrog() {
-  if (!frog.alive) return;
-  frog.alive = false;
-  deathTimer = 40;
-}
-
-function nextLevel() {
-  level++;
-  homesReached = [];
-  buildObstacles();
-  resetFrog();
-  updateHUD();
-
-  // Flash canvas
-  let flashes = 0;
-  const flashInterval = setInterval(() => {
-    canvas.style.opacity = canvas.style.opacity === '0.2' ? '1' : '0.2';
-    flashes++;
-    if (flashes >= 6) {
-      clearInterval(flashInterval);
-      canvas.style.opacity = '1';
-    }
-  }, 100);
-}
-
-function gameOver() {
-  state = 'gameover';
-  const ov = document.getElementById('overlay');
-  ov.classList.remove('hidden');
-  document.getElementById('ov-title').textContent  = 'GAME\nOVER';
-  document.getElementById('ov-title').className    = 'ov-title pink';
-  document.getElementById('ov-sub').textContent    = 'MEJOR SUERTE LA PRÓXIMA VEZ';
-  document.getElementById('ov-score').style.display = 'block';
-  document.getElementById('ov-score').textContent  = `SCORE: ${score}`;
-  document.getElementById('ov-btn').textContent    = '► REINICIAR';
-}
-
-// ============================================================
-// GAME LOOP
-// ============================================================
-function gameLoop() {
-  update();
-
-  ctx.clearRect(0, 0, W, H);
-  drawBackground();
-  drawObstacles();
-
-  if (deathTimer > 0) {
-    drawDeathEffect();
-  } else {
-    drawFrog();
-  }
-
-  animId = requestAnimationFrame(gameLoop);
-}
-
-// ============================================================
-// INPUT — KEYBOARD
-// ============================================================
-const keyMap = {
-  ArrowUp:'up', ArrowDown:'down', ArrowLeft:'left', ArrowRight:'right',
-  w:'up', s:'down', a:'left', d:'right',
-  W:'up', S:'down', A:'left', D:'right',
-};
-
-document.addEventListener('keydown', e => {
-  const dir = keyMap[e.key];
-  if (dir) {
-    e.preventDefault();
-    if (state === 'start' || state === 'gameover') startGame();
-    else moveFrog(dir);
-  }
-  if (e.key === ' ' || e.key === 'Enter') {
-    if (state === 'start' || state === 'gameover') startGame();
-  }
-});
-
-// ============================================================
-// INPUT — D-PAD (mobile)
-// ============================================================
-let lastDpadTime = 0;
-function dpadPress(dir) {
-  const now = Date.now();
-  if (now - lastDpadTime < 80) return; // debounce touch+mouse double-fire
-  lastDpadTime = now;
-  if (state === 'start' || state === 'gameover') {
-    startGame();
-    return;
-  }
-  moveFrog(dir);
-  const btn = document.getElementById(`btn-${dir}`);
-  if (btn) btn.classList.add('pressed');
-}
-
-function dpadRelease(dir) {
-  const btn = document.getElementById(`btn-${dir}`);
-  if (btn) btn.classList.remove('pressed');
-}
-
-// Swipe detection
-let touchStartX, touchStartY;
-canvas.addEventListener('touchstart', e => {
-  touchStartX = e.touches[0].clientX;
-  touchStartY = e.touches[0].clientY;
-  e.preventDefault();
-}, {passive: false});
-
-canvas.addEventListener('touchend', e => {
-  const dx = e.changedTouches[0].clientX - touchStartX;
-  const dy = e.changedTouches[0].clientY - touchStartY;
-  const abs = Math.max(Math.abs(dx), Math.abs(dy));
-  if (abs < 12) return;
-  if (Math.abs(dx) > Math.abs(dy)) dpadPress(dx > 0 ? 'right' : 'left');
-  else dpadPress(dy > 0 ? 'down' : 'up');
-  e.preventDefault();
-}, {passive: false});
-
-// ============================================================
-// LOAD HI SCORE
-// ============================================================
-hiScore = parseInt(localStorage.getItem('lukso_frogger_hi') || '0');
-setInterval(() => {
-  if (score > hiScore) {
-    hiScore = score;
-    localStorage.setItem('lukso_frogger_hi', hiScore);
-  }
-  document.getElementById('hi-el').textContent = hiScore;
-}, 1000);
-
-// Start render loop for animations even before game starts
-gameLoop();
-</script>
-</body>
-</html>
+let
